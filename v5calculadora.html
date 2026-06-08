@@ -1,0 +1,709 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <title>Princesa rumo aos milhões V5 – Plano & Metas</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js">
+    </script>
+
+    <style>
+        body {
+            font-family: 'Segoe UI', Arial, sans-serif;
+            background: #020617;
+            color: #e2e8f0;
+            padding: 20px;
+        }
+        .container {
+            max-width: 1400px;
+            margin: auto;
+        }
+        h2 {
+            text-align: center;
+            color: #facc15;
+            letter-spacing: 1px;
+            margin-bottom: 5px;
+        }
+        .topo {
+            text-align: center;
+            margin-bottom: 15px;
+            color: #94a3b8;
+        }
+        input,
+        select {
+            padding: 10px;
+            margin: 5px;
+            border-radius: 8px;
+            border: 1px solid #1e293b;
+            background: #0f172a;
+            color: #e2e8f0;
+            font-size: 14px;
+        }
+        input:focus,
+        select:focus {
+            outline: none;
+            border-color: #facc15;
+            box-shadow: 0 0 0 1px #facc15;
+        }
+        input[type="date"] {
+            background: #ffffff;
+            color: #000000;
+            border: 1px solid #334155;
+            padding: 8px;
+        }
+        input[type="date"]:focus {
+            border-color: #facc15;
+            box-shadow: 0 0 0 2px rgba(250, 204, 21, 0.5);
+        }
+        button {
+            background: #22c55e;
+            color: #000;
+            font-weight: bold;
+            cursor: pointer;
+            padding: 10px 18px;
+            border-radius: 8px;
+            border: none;
+            font-size: 14px;
+            transition: background 0.2s;
+        }
+        button:hover {
+            background: #16a34a;
+        }
+        .card {
+            background: #020617;
+            border: 1px solid #1e293b;
+            padding: 18px;
+            border-radius: 12px;
+            margin-top: 12px;
+        }
+        .parametros {
+            display: flex;
+            flex-wrap: wrap;
+            align-items: center;
+            gap: 12px;
+        }
+        .parametros label {
+            color: #cbd5e1;
+            font-size: 13px;
+            display: flex;
+            flex-direction: column;
+            gap: 2px;
+            white-space: nowrap;
+        }
+        .parametros input {
+            width: 90px;
+        }
+        .help-text {
+            font-size: 11px;
+            color: #64748b;
+            white-space: normal;
+            max-width: 140px;
+        }
+        table {
+            width: 100%;
+            margin-top: 10px;
+            border-collapse: collapse;
+            font-size: 12px;
+        }
+        td,
+        th {
+            padding: 8px 4px;
+            text-align: center;
+            border-bottom: 1px solid #1e293b;
+        }
+        th {
+            background-color: #0f172a;
+            color: #facc15;
+            font-weight: 600;
+            position: sticky;
+            top: 0;
+        }
+        tr:hover td {
+            background-color: #0f172a20;
+        }
+        .resumo-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 12px;
+        }
+        .resumo-item {
+            background: #0f172a;
+            border-radius: 8px;
+            padding: 10px 14px;
+            border: 1px solid #1e293b;
+        }
+        .resumo-item span {
+            display: block;
+            font-size: 12px;
+            color: #94a3b8;
+        }
+        .resumo-item strong {
+            color: #facc15;
+            font-size: 16px;
+        }
+        .alerta {
+            background: #1e293b;
+            border-left: 4px solid #facc15;
+            padding: 12px;
+            margin: 12px 0;
+            font-weight: bold;
+            border-radius: 8px;
+        }
+        .badge-meta {
+            background: #22c55e;
+            color: #000;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        .badge-stop {
+            background: #ef4444;
+            color: #fff;
+            padding: 2px 8px;
+            border-radius: 12px;
+            font-size: 11px;
+            font-weight: bold;
+        }
+        #grafico {
+            margin-top: 20px;
+            background: #020617;
+            border: 1px solid #1e293b;
+            border-radius: 12px;
+            padding: 10px;
+        }
+    </style>
+</head>
+
+<body>
+    <div class="container">
+        <h2>👑 PRINCESA RUMO AOS MILHÕES</h2>
+        <div class="topo">
+            Sistema de Gerenciamento em Forex<br>
+            creator: lucas_cap.g<br>
+            <span id="relogio" style="font-weight: bold; color: #facc15;"></span>
+        </div>
+
+        <!-- Configurações principais -->
+        <div class="card">
+            <div class="parametros">
+                <label>💰 Capital ($)
+                    <input id="capital" placeholder="1000" type="number">
+                    <span class="help-text">Valor inicial da conta</span>
+                </label>
+                <label>📅 Dias
+                    <input id="dias" placeholder="30" type="number">
+                    <span class="help-text">Nº de dias na tabela</span>
+                </label>
+                <select id="modoPeriodo">
+                    <option value="manual">Manual</option>
+                    <option value="6">Semanal (6)</option>
+                    <option value="15">Quinzenal (15)</option>
+                    <option value="30">Mensal (30)</option>
+                </select>
+                <label>📊 Lote inicial
+                    <input id="loteBase" placeholder="0.01" step="0.01" type="number">
+                    <span class="help-text">Lote de referência</span>
+                </label>
+                <label>💱 Dólar (R$)
+                    <input id="cotacao" placeholder="5.00" step="0.01" type="number">
+                    <span class="help-text">Cotação para conversão</span>
+                </label>
+                <label>🎯 Meta diária (%)
+                    <input id="metaPercent" value="5" step="0.1" type="number">
+                    <span class="help-text">% de lucro desejada/dia</span>
+                </label>
+                <label>🛑 Limite perda (%)
+                    <input id="stopPercent" value="3" step="0.1" type="number">
+                    <span class="help-text">% máxima de perda/dia</span>
+                </label>
+            </div>
+        </div>
+
+        <!-- Gestão de Risco e Projeções -->
+        <div class="card">
+            <div class="parametros">
+                <label>⚠️ Risco por trade (%)
+                    <input id="riscoPercent" value="1" step="0.1" type="number">
+                    <span class="help-text">% do saldo arriscada por operação</span>
+                </label>
+                <label>📏 Stop Loss (pips)
+                    <input id="stopPips" value="50" type="number">
+                    <span class="help-text">Stop loss em pips (ex: 50)</span>
+                </label>
+                <label>🏆 Meta semanal (%)
+                    <input id="metaSemanal" value="5" step="0.1" type="number">
+                    <span class="help-text">% de lucro semanal desejado</span>
+                </label>
+                <button onclick="gerar()">🔄 Gerar / Resetar</button>
+            </div>
+        </div>
+
+        <!-- Alerta de meta / desvio do plano -->
+        <div id="alertaPlano" class="alerta" style="display:block;"></div>
+
+        <!-- Resumo cards -->
+        <div class="card">
+            <div class="resumo-grid" id="resumoContainer">
+                <div class="resumo-item">
+                    <span>Capital Base</span>
+                    <strong id="resumoCapital">$0.00</strong>
+                </div>
+                <div class="resumo-item">
+                    <span>Saldo Atual</span>
+                    <strong id="resumoSaldo">$0.00</strong>
+                </div>
+                <div class="resumo-item">
+                    <span>Total Sacado</span>
+                    <strong id="resumoSacado">$0.00</strong>
+                </div>
+                <div class="resumo-item">
+                    <span>Próxima Meta ($)</span>
+                    <strong id="resumoMetaValor">$0.00</strong>
+                </div>
+                <div class="resumo-item">
+                    <span>Próximo Stop ($)</span>
+                    <strong id="resumoStopValor">$0.00</strong>
+                </div>
+                <div class="resumo-item">
+                    <span>Lote Sugerido</span>
+                    <strong id="resumoLoteSugerido">0.00</strong>
+                </div>
+            </div>
+            <p id="progresso" style="margin-top:12px;"></p>
+            <p id="estatisticas"></p>
+            <p id="infoComposta" style="color:#facc15; font-weight:bold;"></p>
+            <p id="infoPlano" style="color:#38bdf8; font-weight:bold; font-size:15px;"></p>
+        </div>
+
+        <!-- Tabela de dias -->
+        <div class="card" style="overflow-x: auto;">
+            <table id="tabela"></table>
+        </div>
+
+        <!-- Gráfico -->
+        <canvas id="grafico" height="120"></canvas>
+    </div>
+
+    <script>
+        // Variáveis globais
+        let capital = 0,
+            resultados = [],
+            datas = [],
+            chart;
+        let lote = 0.01,
+            cotacao = 5;
+        let metaPercent = 5,
+            stopPercent = 3;
+        let riscoPercent = 1,
+            stopPips = 50,
+            metaSemanal = 5;
+
+        // Relógio
+        setInterval(() => {
+            document.getElementById('relogio').innerText = new Date().toLocaleString('pt-BR');
+        }, 1000);
+
+        // Salvar estado completo
+        function salvar() {
+            let mp = parseFloat(document.getElementById('metaPercent').value) || 5;
+            let sp = parseFloat(document.getElementById('stopPercent').value) || 3;
+            let rp = parseFloat(document.getElementById('riscoPercent').value) || 1;
+            let stp = parseFloat(document.getElementById('stopPips').value) || 50;
+            let msm = parseFloat(document.getElementById('metaSemanal').value) || 5;
+            localStorage.setItem('painelV5', JSON.stringify({
+                capital,
+                resultados,
+                datas,
+                lote,
+                cotacao,
+                metaPercent: mp,
+                stopPercent: sp,
+                riscoPercent: rp,
+                stopPips: stp,
+                metaSemanal: msm
+            }));
+        }
+
+        // Carregar estado ao iniciar
+        window.onload = function() {
+            let d = JSON.parse(localStorage.getItem('painelV5'));
+            if (!d) return;
+
+            capital = d.capital;
+            resultados = d.resultados || [];
+            datas = d.datas || [];
+            lote = d.lote || 0.01;
+            cotacao = d.cotacao || 5;
+            metaPercent = d.metaPercent || 5;
+            stopPercent = d.stopPercent || 3;
+            riscoPercent = d.riscoPercent || 1;
+            stopPips = d.stopPips || 50;
+            metaSemanal = d.metaSemanal || 5;
+
+            document.getElementById('capital').value = capital;
+            document.getElementById('dias').value = resultados.length;
+            document.getElementById('loteBase').value = lote;
+            document.getElementById('cotacao').value = cotacao;
+            document.getElementById('metaPercent').value = metaPercent;
+            document.getElementById('stopPercent').value = stopPercent;
+            document.getElementById('riscoPercent').value = riscoPercent;
+            document.getElementById('stopPips').value = stopPips;
+            document.getElementById('metaSemanal').value = metaSemanal;
+
+            gerar(true);
+
+            setTimeout(() => {
+                resultados.forEach((v, i) => {
+                    let el = document.getElementById(`lucro${i}`);
+                    if (el) el.value = v;
+                });
+                datas.forEach((d, i) => {
+                    let el = document.getElementById(`data${i}`);
+                    if (el) el.value = d;
+                });
+                atualizarTudo();
+            }, 100);
+        };
+
+        // Gerar estrutura da tabela
+        function gerar(reload = false) {
+            capital = parseFloat(document.getElementById('capital').value);
+            let dias = parseInt(document.getElementById('dias').value);
+            lote = parseFloat(document.getElementById('loteBase').value);
+            cotacao = parseFloat(document.getElementById('cotacao').value);
+            metaPercent = parseFloat(document.getElementById('metaPercent').value) || 5;
+            stopPercent = parseFloat(document.getElementById('stopPercent').value) || 3;
+            riscoPercent = parseFloat(document.getElementById('riscoPercent').value) || 1;
+            stopPips = parseFloat(document.getElementById('stopPips').value) || 50;
+            metaSemanal = parseFloat(document.getElementById('metaSemanal').value) || 5;
+
+            let modo = document.getElementById('modoPeriodo').value;
+            if (modo !== "manual") {
+                dias = parseInt(modo);
+                document.getElementById('dias').value = dias;
+            }
+
+            if (isNaN(capital) || isNaN(dias) || isNaN(lote) || isNaN(cotacao)) {
+                if (!reload) alert('Preencha todos os campos corretamente.');
+                return;
+            }
+
+            if (!reload) {
+                resultados = new Array(dias).fill(0);
+                datas = new Array(dias).fill('');
+            }
+
+            let tabela = document.getElementById('tabela');
+            tabela.innerHTML = `
+            <tr>
+                <th>Dia</th>
+                <th>Data</th>
+                <th>Lucro ($)</th>
+                <th>Saque ($)</th>
+                <th>Pontos</th>
+                <th>Meta Dia ($) <span class="badge-meta">🎯</span></th>
+                <th>Stop ($) <span class="badge-stop">🛑</span></th>
+                <th>Lote Sug.</th>
+                <th>Saldo Planejado ($)</th>
+                <th>Diferença ($)</th>
+                <th>Status</th>
+            </tr>
+            `;
+
+            for (let i = 0; i < dias; i++) {
+                tabela.innerHTML += `
+                <tr>
+                    <td>${i + 1}</td>
+                    <td><input type="date" id="data${i}" onchange="datas[${i}]=this.value;atualizarTudo();salvar()"></td>
+                    <td><input type="number" id="lucro${i}" step="any" oninput="atualizarTudo()" style="width:90px;"></td>
+                    <td><input type="number" id="saque${i}" step="any" oninput="atualizarTudo()" style="width:80px;"></td>
+                    <td id="p${i}">-</td>
+                    <td id="meta${i}" style="color:#22c55e;">-</td>
+                    <td id="stop${i}" style="color:#ef4444;">-</td>
+                    <td id="loteSug${i}" style="color:#38bdf8; font-weight:bold;">-</td>
+                    <td id="plan${i}">-</td>
+                    <td id="gap${i}" style="font-weight:bold;">-</td>
+                    <td id="st${i}">-</td>
+                </tr>`;
+            }
+
+            salvar();
+            atualizarTudo();
+        }
+
+        // Encontra o último índice que possui lucro preenchido (não zero) ou data preenchida
+        function encontrarUltimoPreenchido() {
+            let ultimo = -1;
+            for (let i = 0; i < resultados.length; i++) {
+                if (resultados[i] !== 0 || datas[i] !== '') {
+                    ultimo = i;
+                }
+            }
+            return ultimo;
+        }
+
+        // Calcula lucro semanal baseado nas datas do último dia preenchido
+        function calcularLucroSemanal() {
+            let ultimo = encontrarUltimoPreenchido();
+            if (ultimo === -1) return 0;
+
+            let dataUltima = datas[ultimo];
+            if (!dataUltima) {
+                // sem datas, usa os últimos 6 registros da tabela
+                return resultados.slice(-6).reduce((a, b) => a + b, 0);
+            }
+
+            // com datas, determina a semana (seg a dom) da data do último dia preenchido
+            let ref = new Date(dataUltima + 'T00:00:00');
+            let diaSemana = ref.getDay(); // 0=dom, 1=seg, ..., 6=sab
+            // inicio da semana (segunda-feira)
+            let inicio = new Date(ref);
+            inicio.setDate(ref.getDate() - (diaSemana === 0 ? 6 : diaSemana - 1));
+            inicio.setHours(0,0,0,0);
+            // fim da semana (domingo)
+            let fim = new Date(inicio);
+            fim.setDate(inicio.getDate() + 6);
+            fim.setHours(23,59,59,999);
+
+            let lucro = 0;
+            for (let i = 0; i < resultados.length; i++) {
+                if (datas[i]) {
+                    let d = new Date(datas[i] + 'T00:00:00');
+                    if (d >= inicio && d <= fim) {
+                        lucro += resultados[i];
+                    }
+                }
+            }
+            return lucro;
+        }
+
+        // Atualizar tudo (cálculos, gráfico, alertas)
+        function atualizarTudo() {
+            if (resultados.length === 0) return;
+
+            metaPercent = parseFloat(document.getElementById('metaPercent').value) || 5;
+            stopPercent = parseFloat(document.getElementById('stopPercent').value) || 3;
+            riscoPercent = parseFloat(document.getElementById('riscoPercent').value) || 1;
+            stopPips = parseFloat(document.getElementById('stopPips').value) || 50;
+            metaSemanal = parseFloat(document.getElementById('metaSemanal').value) || 5;
+
+            for (let i = 0; i < resultados.length; i++) {
+                let inpLucro = document.getElementById(`lucro${i}`);
+                if (inpLucro) {
+                    resultados[i] = parseFloat(inpLucro.value) || 0;
+                }
+            }
+
+            let saldo = capital;
+            let totalSacado = 0;
+            let real = [];
+            let saldoPreDia = capital;
+            const totalDias = resultados.length;
+
+            // plano de saldos (juros compostos)
+            const plano = [];
+            for (let i = 1; i <= totalDias; i++) {
+                plano.push(capital * Math.pow(1 + metaPercent / 100, i));
+            }
+
+            for (let i = 0; i < totalDias; i++) {
+                let lucro = resultados[i];
+                let saque = parseFloat(document.getElementById(`saque${i}`)?.value) || 0;
+                let saldoAntes = saldoPreDia;
+
+                let metaDiaValor = saldoAntes * (metaPercent / 100);
+                let stopDiaValor = saldoAntes * (stopPercent / 100);
+                document.getElementById(`meta${i}`).innerText = '$' + metaDiaValor.toFixed(2);
+                document.getElementById(`stop${i}`).innerText = '$' + stopDiaValor.toFixed(2);
+
+                let riscoMonetario = saldoAntes * (riscoPercent / 100);
+                let loteSugerido = riscoMonetario / (stopPips * 10);
+                loteSugerido = Math.max(0.01, Math.round(loteSugerido * 100) / 100);
+                document.getElementById(`loteSug${i}`).innerText = loteSugerido.toFixed(2);
+
+                saldo += lucro;
+                if (saque > 0) {
+                    saldo -= saque;
+                    totalSacado += saque;
+                    if (saldo > capital) saldo = capital;
+                }
+                real.push(saldo);
+
+                let pontos = (lucro / lote) || 0;
+                document.getElementById(`p${i}`).innerText = Math.round(pontos);
+
+                let saldoPlanejado = plano[i];
+                document.getElementById(`plan${i}`).innerText = '$' + saldoPlanejado.toFixed(2);
+                let gap = saldoPlanejado - saldo;
+                let gapEl = document.getElementById(`gap${i}`);
+                gapEl.innerText = (gap >= 0 ? '-$' : '+$') + Math.abs(gap).toFixed(2);
+                gapEl.style.color = gap > 0 ? '#ef4444' : (gap < 0 ? '#22c55e' : '#94a3b8');
+
+                let status = '';
+                let metaDiaBase = capital * 0.05;
+                if (saque > 0) status = '💸 Saque';
+                else if (lucro >= metaDiaBase) status = '🚀 Meta';
+                else if (lucro > 0) status = '📈 Gain';
+                else if (lucro < 0 && Math.abs(lucro) <= metaDiaBase) status = '⚠️ Controlado';
+                else if (lucro < 0) status = '❌ Loss';
+                document.getElementById(`st${i}`).innerText = status;
+
+                saldoPreDia = saldo;
+            }
+
+            let saldoFinal = real[real.length - 1] || capital;
+
+            // Determinar o último dia preenchido e próximo
+            let ultimoPreenchido = encontrarUltimoPreenchido();
+            let proxDia = (ultimoPreenchido >= 0 && ultimoPreenchido < totalDias - 1) ? ultimoPreenchido + 1 : totalDias;
+
+            let saldoReferencia = (ultimoPreenchido >= 0) ? real[ultimoPreenchido] : capital;
+            let planoReferencia = (ultimoPreenchido >= 0) ? plano[ultimoPreenchido] : capital;
+            let gapHoje = planoReferencia - saldoReferencia;
+
+            let metaAmanha = null;
+            if (proxDia < totalDias) {
+                // próximo dia existe na tabela
+                metaAmanha = plano[proxDia] - saldoReferencia;
+            } else {
+                // projeção para um dia além da tabela
+                let proxPlanejado = capital * Math.pow(1 + metaPercent / 100, totalDias + 1);
+                metaAmanha = proxPlanejado - saldoReferencia;
+            }
+
+            // Cards de resumo
+            document.getElementById('resumoCapital').innerText = '$' + capital.toFixed(2);
+            document.getElementById('resumoSaldo').innerText = '$' + saldoFinal.toFixed(2);
+            document.getElementById('resumoSacado').innerText = '$' + totalSacado.toFixed(2);
+
+            let proximaMeta = saldoReferencia * (metaPercent / 100);
+            let proximoStop = saldoReferencia * (stopPercent / 100);
+            document.getElementById('resumoMetaValor').innerText = '$' + proximaMeta.toFixed(2);
+            document.getElementById('resumoStopValor').innerText = '$' + proximoStop.toFixed(2);
+
+            let riscoProximo = saldoReferencia * (riscoPercent / 100);
+            let loteProximo = riscoProximo / (stopPips * 10);
+            loteProximo = Math.max(0.01, Math.round(loteProximo * 100) / 100);
+            document.getElementById('resumoLoteSugerido').innerText = loteProximo.toFixed(2);
+
+            // Progresso (dia, semana, mês)
+            let lucroDia = (ultimoPreenchido >= 0) ? resultados[ultimoPreenchido] : 0;
+            let lucroSemana = calcularLucroSemanal();
+            let lucroMes = resultados.reduce((a, b) => a + b, 0);
+            document.getElementById('progresso').innerText =
+                `📊 Lucro Dia: $${lucroDia.toFixed(2)} | Semana: $${lucroSemana.toFixed(2)} | Mês: $${lucroMes.toFixed(2)}`;
+
+            // Estatísticas
+            let ganhos = 0, metas = 0, controlado = 0, fora = 0;
+            let metaDiaRef = capital * 0.05;
+            resultados.forEach(v => {
+                if (v > 0) ganhos++;
+                if (v >= metaDiaRef) metas++;
+                if (v < 0 && Math.abs(v) <= metaDiaRef) controlado++;
+                if (v < 0 && Math.abs(v) > metaDiaRef) fora++;
+            });
+            let total = resultados.length || 1;
+            document.getElementById('estatisticas').innerText =
+                `📈 WinRate: ${((ganhos / total) * 100).toFixed(1)}% | Consistência: ${(((metas + controlado) / total) * 100).toFixed(1)}%`;
+
+            // Juros compostos
+            let taxaDiaria = 0;
+            if (capital > 0 && saldoFinal > 0 && totalDias > 0) {
+                taxaDiaria = Math.pow(saldoFinal / capital, 1 / totalDias) - 1;
+            }
+            let taxaFormatada = (taxaDiaria * 100).toFixed(2);
+            let projecao30 = capital * Math.pow(1 + taxaDiaria, 30);
+            document.getElementById('infoComposta').innerText =
+                `📐 Crescimento médio diário (composto): ${taxaFormatada}% | Projeção em 30 dias: $${projecao30.toFixed(2)}`;
+
+            // Montar mensagem do alerta
+            let msgPlano = '';
+            let alertaDiv = document.getElementById('alertaPlano');
+            if (ultimoPreenchido === -1) {
+                msgPlano = 'ℹ️ Preencha o primeiro dia de lucro para começar o acompanhamento.';
+            } else {
+                if (gapHoje > 0.005) {
+                    msgPlano = `⚠️ Você está abaixo do plano em <strong>$${gapHoje.toFixed(2)}</strong> no dia ${ultimoPreenchido+1}.`;
+                    if (metaAmanha !== null) {
+                        msgPlano += ` <span style="display:block; margin-top:5px;">👉 Para voltar à rota, no próximo dia você precisa de um lucro de <strong style="color:#facc15;">$${metaAmanha.toFixed(2)}</strong> (${((metaAmanha/saldoReferencia)*100).toFixed(1)}% do saldo atual).</span>`;
+                    }
+                } else if (gapHoje < -0.005) {
+                    msgPlano = `✅ Você está <strong>$${Math.abs(gapHoje).toFixed(2)} acima do plano</strong> no dia ${ultimoPreenchido+1} – excelente!`;
+                    if (metaAmanha !== null) {
+                        msgPlano += ` <span style="display:block; margin-top:5px;">📌 Lucro mínimo sugerido para o próximo dia: <strong style="color:#22c55e;">$${metaAmanha.toFixed(2)}</strong> para manter o ritmo.</span>`;
+                    }
+                } else {
+                    msgPlano = `✔️ Você está exatamente no plano no dia ${ultimoPreenchido+1}.`;
+                    if (metaAmanha !== null) {
+                        msgPlano += ` <span style="display:block; margin-top:5px;">🎯 Meta para o próximo dia: <strong>$${metaAmanha.toFixed(2)}</strong>.</span>`;
+                    }
+                }
+            }
+
+            let metaSemanalValor = capital * (metaSemanal / 100);
+            let pctSemana = capital > 0 ? (lucroSemana / capital * 100).toFixed(1) : 0;
+            if (lucroSemana >= metaSemanalValor && lucroSemana > 0) {
+                msgPlano += `<br>🏆 <strong>Meta semanal batida!</strong> (${pctSemana}% de ${metaSemanal}%) – Considere proteger o capital.`;
+            } else {
+                msgPlano += `<br>📅 Progresso semanal: ${pctSemana}% da meta de ${metaSemanal}%.`;
+            }
+            alertaDiv.innerHTML = msgPlano;
+
+            // Gráfico
+            if (chart) chart.destroy();
+            let labels = datas.map((d, i) => d ? new Date(d + 'T00:00:00').toLocaleDateString('pt-BR') : `Dia ${i+1}`);
+            let labelsExtras = Array.from({length: 7}, (_, j) => `Futuro ${j+1} dia(s)`);
+            let allLabels = labels.concat(labelsExtras);
+            let realExtended = real.concat(new Array(7).fill(null));
+
+            let projMeta = [capital];
+            let projStop = [capital];
+            for (let i = 1; i <= totalDias; i++) {
+                projMeta.push(projMeta[i-1] * (1 + metaPercent/100));
+                projStop.push(projStop[i-1] * (1 - stopPercent/100));
+            }
+            let metaGrafico = projMeta.slice(1).concat(new Array(7).fill(null));
+            let stopGrafico = projStop.slice(1).concat(new Array(7).fill(null));
+
+            let compoundCurve = [];
+            for (let i = 1; i <= totalDias; i++) compoundCurve.push(capital * Math.pow(1 + taxaDiaria, i));
+            let lastC = compoundCurve[compoundCurve.length-1] || capital;
+            for (let j = 1; j <= 7; j++) compoundCurve.push(lastC * Math.pow(1 + taxaDiaria, j));
+
+            chart = new Chart(document.getElementById('grafico'), {
+                type: 'line',
+                data: {
+                    labels: allLabels,
+                    datasets: [
+                        { label: 'Saldo Real', data: realExtended, borderColor: '#22c55e', borderWidth: 2, tension: 0.1, fill: false, spanGaps: false },
+                        { label: `Projeção Meta (${metaPercent}%)`, data: metaGrafico, borderColor: '#facc15', borderDash: [6,3], borderWidth: 2, tension: 0.1, fill: false, pointRadius: 1, spanGaps: false },
+                        { label: `Limite Stop (${stopPercent}%)`, data: stopGrafico, borderColor: '#ef4444', borderDash: [6,3], borderWidth: 2, tension: 0.1, fill: false, pointRadius: 1, spanGaps: false },
+                        { label: 'Curva composta (média)', data: compoundCurve, borderColor: '#38bdf8', borderWidth: 2, borderDash: [3,3], tension: 0.2, fill: false, pointRadius: 0, spanGaps: false }
+                    ]
+                },
+                options: {
+                    responsive: true,
+                    plugins: {
+                        legend: { labels: { color: '#cbd5e1', usePointStyle: true, pointStyle: 'line' } },
+                        tooltip: {
+                            callbacks: {
+                                label: function(ctx) {
+                                    let val = ctx.raw;
+                                    return ctx.dataset.label + ': ' + (val !== null ? '$' + parseFloat(val).toFixed(2) : '—');
+                                }
+                            }
+                        }
+                    },
+                    scales: {
+                        x: { ticks: { color: '#94a3b8', maxRotation: 45 }, grid: { color: '#1e293b' } },
+                        y: { ticks: { color: '#94a3b8', callback: v => '$' + v }, grid: { color: '#1e293b' } }
+                    }
+                }
+            });
+
+            salvar();
+        }
+    </script>
+</body>
+</html>
